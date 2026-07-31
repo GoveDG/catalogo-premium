@@ -1,19 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Check, SlidersHorizontal, X } from "lucide-react";
+import { useState } from "react";
 import type { Product } from "@/lib/products";
 import { ProductVisual } from "./product-visual";
 
 export function Catalog({ products }: { products: Product[] }) {
-  const [query, setQuery] = useState("");
-  const filtered = useMemo(() => products.filter((p) => `${p.name} ${p.brand}`.toLowerCase().includes(query.toLowerCase())), [products, query]);
+  const [filter, setFilter] = useState<"all" | "high" | "ultra" | "compact">("all");
+  const [open, setOpen] = useState(false);
+  const filtered = products.filter((product) => {
+    if (filter === "ultra") return product.puffs >= 50000;
+    if (filter === "high") return product.puffs >= 30000;
+    if (filter === "compact") return product.puffs < 30000;
+    return true;
+  });
+  const filterLabels = { all: "Todos", high: "30K o más", ultra: "50K o más", compact: "Hasta 25K" };
   return (
     <section id="catalogo" className="catalog-section catalog-sheet-section">
       <div className="section-heading catalog-heading">
         <div><span className="eyebrow">CATÁLOGO PREMIUM</span><h2>Todos los productos</h2></div>
-        <div className="search-wrap"><Search size={16} /><input aria-label="Buscar productos" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar" /></div>
+        {filter !== "all" && <span className="active-filter">{filterLabels[filter]}</span>}
       </div>
       {filtered.length ? <div className="product-grid">{filtered.map((product) => (
         <Link href={`/productos/${product.slug}`} className="product-card" key={product.slug}>
@@ -24,7 +31,12 @@ export function Catalog({ products }: { products: Product[] }) {
             <ul className="mini-specs"><li><Check/>{product.features[0]}</li><li><Check/>{product.battery}</li><li><Check/>{product.features[1]}</li></ul>
           </div>
         </Link>
-      ))}</div> : <div className="empty">No encontramos productos con “{query}”.</div>}
+      ))}</div> : <div className="empty">No hay productos en este filtro.</div>}
+      <div className={`filter-popover ${open ? "is-open" : ""}`} aria-hidden={!open}>
+        <div className="filter-popover-head"><strong>Filtrar productos</strong><button onClick={() => setOpen(false)} aria-label="Cerrar filtros"><X/></button></div>
+        {(["all", "high", "ultra", "compact"] as const).map((value) => <button key={value} className={filter === value ? "selected" : ""} onClick={() => { setFilter(value); setOpen(false); }}>{filterLabels[value]}<span>{value === "all" ? products.length : products.filter((p) => value === "ultra" ? p.puffs >= 50000 : value === "high" ? p.puffs >= 30000 : p.puffs < 30000).length}</span></button>)}
+      </div>
+      <button className="floating-filter" onClick={() => setOpen(!open)} aria-label="Filtrar productos" aria-expanded={open}><SlidersHorizontal/><span>Filtrar</span>{filter !== "all" && <i/>}</button>
     </section>
   );
 }
