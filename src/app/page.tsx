@@ -1,16 +1,18 @@
-import Link from "next/link";
-import { ArrowDown, BatteryCharging, ShieldCheck, Sparkles } from "lucide-react";
+import { Banknote, Building2, CreditCard, ShieldCheck, Smartphone, Users } from "lucide-react";
 import { Catalog } from "@/components/catalog";
-import { Header } from "@/components/header";
 import { ProductVisual } from "@/components/product-visual";
 import { getProducts } from "@/lib/db";
 
 export default async function Home() {
   const products = await getProducts();
-  const hero = products.find((p) => p.slug === "meteor")!;
-  return <><Header /><main>
-    <section className="hero"><div className="hero-copy"><span className="pill"><Sparkles size={14} /> Nueva colección</span><h1>Diseño que se siente.<br/><em>Rendimiento que dura.</em></h1><p>Descubre una selección premium de dispositivos, elegidos por su diseño, autonomía y experiencia.</p><div className="hero-actions"><Link href="#catalogo" className="primary-button">Ver catálogo <ArrowDown size={17}/></Link><span>12 modelos disponibles</span></div></div><div className="hero-product"><div className="orb"/><ProductVisual product={hero} large/><div className="floating-stat"><strong>70K</strong><span>máxima duración</span></div></div></section>
-    <section id="beneficios" className="benefits"><div><ShieldCheck/><span><strong>Calidad verificada</strong><small>Productos seleccionados</small></span></div><div><BatteryCharging/><span><strong>Gran autonomía</strong><small>Hasta 70.000 puffs</small></span></div><div><Sparkles/><span><strong>Diseño premium</strong><small>Acabados de alta calidad</small></span></div></section>
+  const featured = products.slice(0, 3);
+  return <main className="catalog-page"><div className="catalog-container">
+    <section className="catalog-hero">
+      <div className="catalog-hero-copy"><h1>PREMIUM</h1><h2>EOM</h2><div className="payments"><strong>MÉTODOS DE PAGO:</strong><div className="payment-row"><span><Smartphone/><b>YAPPY<small>COMERCIAL</small></b></span><span><CreditCard/><b>TARJETAS<small>CRÉDITO / DÉBITO</small></b></span><span><Building2/><b>ACH<small>TRANSFERENCIA</small></b></span><span><Banknote/><b>EFECTIVO<small>PUNTO DE VENTA</small></b></span></div></div></div>
+      <div className="hero-device-group">{featured.map((product, index)=><div className={`hero-mini hero-mini-${index}`} key={product.slug}><ProductVisual product={product}/></div>)}</div>
+      <div className="side-badges"><div><Users/><b>+2M</b><span>USUARIOS<br/>SATISFECHOS</span></div><div><ShieldCheck/><b>CALIDAD</b><span>PREMIUM<br/>GARANTIZADA</span></div></div>
+    </section>
     <Catalog products={products}/>
-  </main><footer><div className="brand"><span className="brand-mark">P</span><span>Premium</span></div><p>Catálogo digital · Panamá</p><span>© 2026</span></footer></>;
+    <div className="catalog-foot"><span>PREMIUM EOM</span><span>Catálogo digital · Panamá · 2026</span></div>
+  </div></main>;
 }
