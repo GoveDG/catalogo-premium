@@ -18,10 +18,7 @@ export function Catalog({ products }: { products: Product[] }) {
   const filterLabels = { all: "Todos", high: "30K o más", ultra: "50K o más", compact: "Hasta 25K" };
   return (
     <section id="catalogo" className="catalog-section catalog-sheet-section">
-      <div className="section-heading catalog-heading">
-        <div><span className="eyebrow">CATÁLOGO PREMIUM</span><h2>Todos los productos</h2></div>
-        {filter !== "all" && <span className="active-filter">{filterLabels[filter]}</span>}
-      </div>
+      {filter !== "all" && <div className="filter-status"><span className="active-filter">{filterLabels[filter]}</span></div>}
       {filtered.length ? <div className="product-grid">{filtered.map((product) => (
         <Link href={`/productos/${product.slug}`} className="product-card" key={product.slug}>
           <div className="card-top"><span>{product.brand}</span></div>
