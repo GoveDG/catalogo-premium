@@ -26,19 +26,28 @@ export function Catalog({ products }: { products: Product[] }) {
   });
   const filterLabels = { all: "Todos", high: "30K o más", ultra: "50K o más", compact: "Hasta 25K" };
   const categoryFor = (product: Product) => product.puffs >= 50000 ? "Ultra" : product.featured ? "Premium" : product.puffs >= 30000 ? "Pro" : "Essential";
+  const sectionFor = (product: Product) => {
+    if (["meteor", "donet", "crypto-vibe", "nova-bar", "sp50000", "extre-100k"].includes(product.slug)) return "premium";
+    if (["dummy-xf", "air-plus", "heavy-weight", "genius", "meloso", "fire-boost"].includes(product.slug)) return "baratos";
+    return "marcas";
+  };
+  const sections = [
+    { id: "marcas", title: "Marcas", subtitle: "Innovación y tecnología", tone: "brands" },
+    { id: "premium", title: "Premium", subtitle: "Diseño y máxima duración", tone: "premium" },
+    { id: "baratos", title: "Baratos", subtitle: "Rendimiento al mejor precio", tone: "budget" },
+  ] as const;
   return (
     <section id="catalogo" className="catalog-section catalog-sheet-section">
       {filter !== "all" && <div className="filter-status"><span className="active-filter">{filterLabels[filter]}</span></div>}
-      {filtered.length ? <div className="product-grid">{filtered.map((product) => (
-        <button type="button" onClick={() => { setSelected(product); setShowVideo(false); }} className="product-card" key={product.slug} aria-label={`Ver ${product.name}`}>
-          <div className="card-top"><span>{product.brand}</span></div>
-          <ProductVisual product={product} />
-          <div className="card-copy catalog-card-copy">
-            <div className="product-card-title"><h3>{product.name}</h3><div className="puff-count"><strong>{product.puffs.toLocaleString("es-PA")}</strong><span>puffs</span></div></div>
-            <ul className="mini-specs"><li><Check/>{product.features[0]}</li><li><Check/>{product.battery}</li><li><Check/>{product.features[1]}</li></ul>
-          </div>
-        </button>
-      ))}</div> : <div className="empty">No hay productos en este filtro.</div>}
+      {filtered.length ? <div className="catalog-sections">{sections.map((section, sectionIndex) => {
+        const sectionProducts = filtered.filter((product) => sectionFor(product) === section.id);
+        if (!sectionProducts.length) return null;
+        return <div className="catalog-group" key={section.id} id={section.id}>
+          {sectionIndex > 0 && <div className={`section-banner section-banner-${section.tone}`}><div><span>COLECCIÓN EOM</span><h2>{section.title}</h2><p>{section.subtitle}</p></div><div className="section-banner-devices">{sectionProducts.slice(0,3).map((product)=><ProductVisual product={product} key={product.slug}/>)}</div></div>}
+          <div className="group-label"><div><span>SECCIÓN</span><h2>{section.title}</h2></div><strong>{sectionProducts.length} productos</strong></div>
+          <div className="product-grid">{sectionProducts.map((product) => <button type="button" onClick={() => { setSelected(product); setShowVideo(false); }} className="product-card" key={product.slug} aria-label={`Ver ${product.name}`}><div className="card-top"><span>{product.brand}</span></div><ProductVisual product={product}/><div className="card-copy catalog-card-copy"><div className="product-card-title"><h3>{product.name}</h3><div className="puff-count"><strong>{product.puffs.toLocaleString("es-PA")}</strong><span>puffs</span></div></div><ul className="mini-specs"><li><Check/>{product.features[0]}</li><li><Check/>{product.battery}</li><li><Check/>{product.features[1]}</li></ul></div></button>)}</div>
+        </div>;
+      })}</div> : <div className="empty">No hay productos en este filtro.</div>}
       <div className={`filter-popover ${open ? "is-open" : ""}`} aria-hidden={!open}>
         <div className="filter-popover-head"><strong>Filtrar productos</strong><button onClick={() => setOpen(false)} aria-label="Cerrar filtros"><X/></button></div>
         {(["all", "high", "ultra", "compact"] as const).map((value) => <button key={value} className={filter === value ? "selected" : ""} onClick={() => { setFilter(value); setOpen(false); }}>{filterLabels[value]}<span>{value === "all" ? products.length : products.filter((p) => value === "ultra" ? p.puffs >= 50000 : value === "high" ? p.puffs >= 30000 : p.puffs < 30000).length}</span></button>)}
