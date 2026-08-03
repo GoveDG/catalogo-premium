@@ -1,0 +1,5 @@
+.tech-sheet dl { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:0; }
+.tech-sheet dl > div { min-width:0; padding:8px 9px; background:#fff; border:1px solid var(--line); border-radius:9px; }
+.tech-sheet dt { color:#92989e; font-size:8px; text-transform:uppercase; letter-spacing:.06em; }
+.tech-sheet dd { margin:3px 0 0; color:#3e464e; font-size:10px; line-height:1.25; }
+.tech-sheet small { display:block; margin-top:8px; color:#8a6b34; font-size:8px; line-height:1.35; }
