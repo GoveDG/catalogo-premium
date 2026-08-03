@@ -38,6 +38,7 @@ export function Catalog({ products }: { products: Product[] }) {
     "turbo-x", "fzzybar", "donet", "meteor", "crypto-vibe", "air-plus", "dummy-xf", "orionbar", "heavy-weight", "genius",
     "geek-us", "nova-bar", "extre-bar-turbo-x", "tasteflex-50k", "elux-astra-50k", "glamee-dice-6k", "glamee-gt-8k",
     "glamee-nova-4k", "glamee-flow-4500", "space-max-bx8000",
+    "lost-angel-50k", "star-maxus-50k", "adjust-myrusher-40k", "nexa-ultra-50k", "lady-dinner-galax-60k",
   ];
   const budgetCatalogSlugs = [
     "meloso", "orionbar-budget", "spaceman-10k-pro", "airmez-matrix-25k", "craftbox-v-play",
