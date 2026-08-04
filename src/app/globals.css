@@ -2502,8 +2502,42 @@ footer .brand {
   }
 }
 @media (max-width: 760px) {
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-visual,
+  .media-track,
+  .modal-visual .product-stage-large {
+    height: min(315px, 40dvh);
+  }
+  .modal-visual {
+    flex: 0 0 min(315px, 40dvh);
+  }
+  .modal-info {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-specs {
+    flex: none;
+  }
+  .modal-info .product-tabs {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+  .modal-info .tabs-list {
+    flex: none;
+  }
   .modal-info .tab-panel {
-    height: 210px;
+    flex: 1;
+    min-height: 0;
+    height: auto;
   }
 }
 @media (min-width: 761px) {
