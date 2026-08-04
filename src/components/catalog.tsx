@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, BatteryCharging, Check, Gauge, Layers3, Play, SlidersHorizontal, X } from "lucide-react";
+import { BatteryCharging, Check, Gauge, Layers3, Play, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import type { Product } from "@/lib/products";
 import { ProductVisual } from "./product-visual";
 import { ProductTabs } from "./product-tabs";
+import { RandomProductVisuals } from "./random-product-visuals";
 
 const subscribeToClient = () => () => {};
 
@@ -63,15 +64,15 @@ export function Catalog({ products }: { products: Product[] }) {
         const sectionProducts = filteredProducts.filter((product) => sectionFor(product) === section.id);
         if (!sectionProducts.length) return null;
         return <div className="catalog-group" key={section.id} id={section.id}>
-          {sectionIndex > 0 && <div className={`section-banner section-banner-${section.tone}`}><div><span>COLECCIÓN EOM</span><h2>{section.title}</h2><p>{section.subtitle}</p></div><div className="section-banner-devices">{sectionProducts.slice(0,3).map((product)=><ProductVisual product={product} key={product.slug}/>)}</div></div>}
+          {sectionIndex > 0 && <div className={`section-banner section-banner-${section.tone}`}><div><span>COLECCIÓN EOM</span><h2>{section.title}</h2><p>{section.subtitle}</p></div><RandomProductVisuals products={sectionProducts} segment={section.id} variant="banner"/></div>}
           <div className="group-label"><div><span>SECCIÓN</span><h2>{section.title}</h2></div><strong>{sectionProducts.length} productos</strong></div>
-          <div className="product-grid">{sectionProducts.map((product) => <button type="button" onClick={() => { setSelected(product); setShowVideo(false); }} className="product-card" key={product.slug} aria-label={`Ver ${product.name}`}><div className="card-top"><span>{product.brand}</span></div><ProductVisual product={product}/><div className="card-copy catalog-card-copy"><div className="product-card-title"><h3>{product.name}</h3><div className="puff-count"><strong>{product.puffs.toLocaleString("es-PA")}</strong><span>puffs</span></div></div><ul className="mini-specs"><li><Check/>{product.features[0]}</li><li><Check/>{product.battery}</li><li><Check/>{product.features[1]}</li></ul></div></button>)}</div>
+          <div className="product-grid">{sectionProducts.map((product) => <button type="button" onClick={() => { setShowVideo(false); setSelected(product); }} className="product-card" key={product.slug} aria-label={`Ver ${product.name}`}><div className="card-top"><span>{product.brand}</span></div><ProductVisual product={product}/><div className="card-copy catalog-card-copy"><div className="product-card-title"><h3>{product.name}</h3><div className="puff-count"><strong>{product.puffs.toLocaleString("es-PA")}</strong><span>puffs</span></div></div><ul className="mini-specs"><li><Check/>{product.features[0]}</li><li><Check/>{product.battery}</li><li><Check/>{product.features[1]}</li></ul></div></button>)}</div>
         </div>;
       })}</div> : <div className="empty">No hay productos en este filtro.</div>}
       {selected && createPortal(<div className="product-modal-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setSelected(null)}>
         <article className="product-modal" role="dialog" aria-modal="true" aria-label={`Información de ${selected.name}`}>
           <header className="modal-header"><div><span>{selected.brand}</span><strong>{selected.name}</strong></div><div className="modal-capacity"><span>Capacidad</span><strong>{selected.puffs.toLocaleString("es-PA")} puffs</strong></div><button onClick={() => setSelected(null)} aria-label="Cerrar producto"><X/></button></header>
-          <div className="modal-body"><div className={`modal-visual ${showVideo ? "show-video" : ""}`} style={{ "--accent": selected.accent } as React.CSSProperties}><span className="category-pill">{categoryFor(selected)}</span><div className="media-track"><div className="media-panel"><ProductVisual product={selected} large/></div><div className="media-panel video-panel"><div className="video-aura"/><ProductVisual product={selected} large/><div className="video-playing"><Play/><span>Vista en movimiento</span></div></div></div><button className="video-toggle" onClick={() => setShowVideo(!showVideo)}>{showVideo ? <><ArrowLeft/> Ver producto</> : <>Ver video <ArrowRight/></>}</button></div><div className="modal-info"><div className="modal-specs"><div><Gauge/><strong>{selected.puffs.toLocaleString("es-PA")}</strong><span>Puffs</span></div><div><BatteryCharging/><strong>{selected.battery}</strong><span>Batería</span></div><div><Layers3/><strong>{selected.features[1]}</strong><span>Tecnología</span></div></div><ProductTabs slug={selected.slug} description={selected.description}/><div className="info-note">Consulta disponibilidad directamente en tu punto de venta.</div></div></div>
+          <div className="modal-body"><div className={`modal-visual ${showVideo ? "show-video" : ""}`} style={{ "--accent": selected.accent } as React.CSSProperties}><span className="category-pill">{categoryFor(selected)}</span><div className="media-track"><div className="media-panel"><ProductVisual product={selected} large/></div><div className="media-panel video-panel"><div className="video-unavailable-message"><Play/><strong>No disponible por ahora</strong><span>La sección de video estará disponible próximamente.</span></div></div></div><button className="video-toggle" type="button" onClick={() => setShowVideo((visible) => !visible)} aria-pressed={showVideo}><Play/>{showVideo ? "Volver" : "Ver video"}</button></div><div className="modal-info"><div className="modal-specs"><div><Gauge/><strong>{selected.puffs.toLocaleString("es-PA")}</strong><span>Puffs</span></div><div><BatteryCharging/><strong>{selected.battery}</strong><span>Batería</span></div><div><Layers3/><strong>{selected.features[1]}</strong><span>Tecnología</span></div></div><ProductTabs slug={selected.slug} description={selected.description}/><div className="info-note">Consulta disponibilidad directamente en tu punto de venta.</div></div></div>
         </article>
       </div>, document.body)}
       {mounted && !selected && createPortal(<div className="home-filter-ui">
